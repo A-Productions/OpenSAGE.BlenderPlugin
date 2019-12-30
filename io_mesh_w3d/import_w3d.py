@@ -8,6 +8,7 @@ from io_mesh_w3d.structs.w3d_animation import *
 from io_mesh_w3d.structs.w3d_compressed_animation import *
 from io_mesh_w3d.structs.w3d_box import *
 from io_mesh_w3d.structs.w3d_hlod import *
+from io_mesh_w3d.structs.w3d_dazzle import *
 
 from io_mesh_w3d.io_binary import *
 from io_mesh_w3d.import_utils_w3d import *
@@ -48,6 +49,7 @@ def load(self, import_settings):
     filesize = os.path.getsize(self.filepath)
 
     mesh_structs = []
+    dazzles = []
     hierarchy = None
     animation = None
     compressedAnimation = None
@@ -70,6 +72,8 @@ def load(self, import_settings):
             hlod = HLod.read(self, file, chunk_end)
         elif chunk_type == W3D_CHUNK_BOX:
             box = Box.read(file)
+        elif chunk_type == W3D_CHUNK_DAZZLE:
+            dazzles.append(Dazzle.read(self, file, chunk_end))
         elif chunk_type == W3D_CHUNK_MORPH_ANIMATION:
             print("-> morph animation chunk is not supported")
             file.seek(chunk_size, 1)
@@ -99,9 +103,6 @@ def load(self, import_settings):
             file.seek(chunk_size, 1)
         elif chunk_type == W3D_CHUNK_LIGHTSCAPE:
             print("-> lightscape chunk is not supported")
-            file.seek(chunk_size, 1)
-        elif chunk_type == W3D_CHUNK_DAZZLE:
-            print("-> dazzle chunk is not supported")
             file.seek(chunk_size, 1)
         elif chunk_type == W3D_CHUNK_SOUNDROBJ:
             print("-> soundobj chunk is not supported")
@@ -165,5 +166,4 @@ W3D_CHUNK_EMITTER = 0x00000500
 W3D_CHUNK_AGGREGATE = 0x00000600
 W3D_CHUNK_NULL_OBJECT = 0x00000750
 W3D_CHUNK_LIGHTSCAPE = 0x00000800
-W3D_CHUNK_DAZZLE = 0x00000900
 W3D_CHUNK_SOUNDROBJ = 0x00000A00

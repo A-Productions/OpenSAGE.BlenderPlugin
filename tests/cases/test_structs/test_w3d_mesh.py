@@ -46,10 +46,9 @@ class TestMesh(TestCase):
 
 
     def test_write_read_prelit(self):
-        print("###################          Prelit test")
         expected = get_mesh(prelit=True)
 
-        #self.assertEqual(5488, expected.size())
+        self.assertEqual(5488, expected.size())
 
         io_stream = io.BytesIO()
         expected.write(io_stream)
@@ -80,6 +79,7 @@ class TestMesh(TestCase):
 
         actual = Mesh.read(self, io_stream, subchunk_end)
         compare_meshes(self, expected, actual)
+
 
     def test_chunk_order(self):
         expected_chunks = [
@@ -125,9 +125,10 @@ class TestMesh(TestCase):
             self.assertEqual(hex(chunk), hex(chunk_type))
             io_stream.seek(chunk_size, 1)
 
+
     def test_unsupported_chunk_skip(self):
         output = io.BytesIO()
-        write_chunk_head(W3D_CHUNK_MESH, output, 90, has_sub_chunks=True)
+        write_chunk_head(W3D_CHUNK_MESH, output, 51, has_sub_chunks=True)
 
         write_chunk_head(W3D_CHUNK_VERTICES_2, output, 1, has_sub_chunks=False)
         write_ubyte(0x00, output)
@@ -136,24 +137,6 @@ class TestMesh(TestCase):
         write_chunk_head(W3D_CHUNK_TANGENTS, output, 1, has_sub_chunks=False)
         write_ubyte(0x00, output)
         write_chunk_head(W3D_CHUNK_BITANGENTS, output, 1, has_sub_chunks=False)
-        write_ubyte(0x00, output)
-        write_chunk_head(W3D_CHUNK_PRELIT_UNLIT, output,
-                         1, has_sub_chunks=False)
-        write_ubyte(0x00, output)
-        write_chunk_head(W3D_CHUNK_PRELIT_VERTEX, output,
-                         1, has_sub_chunks=False)
-        write_ubyte(0x00, output)
-        write_chunk_head(
-            W3D_CHUNK_PRELIT_LIGHTMAP_MULTI_PASS,
-            output,
-            1,
-            has_sub_chunks=False)
-        write_ubyte(0x00, output)
-        write_chunk_head(
-            W3D_CHUNK_PRELIT_LIGHTMAP_MULTI_TEXTURE,
-            output,
-            1,
-            has_sub_chunks=False)
         write_ubyte(0x00, output)
         write_chunk_head(W3D_CHUNK_DEFORM, output, 1, has_sub_chunks=False)
         write_ubyte(0x00, output)
@@ -169,6 +152,7 @@ class TestMesh(TestCase):
 
         Mesh.read(self, io_stream, subchunk_end)
 
+
     def test_unknown_chunk_skip(self):
         output = io.BytesIO()
         write_chunk_head(W3D_CHUNK_MESH, output, 9, has_sub_chunks=True)
@@ -182,6 +166,7 @@ class TestMesh(TestCase):
         self.assertEqual(W3D_CHUNK_MESH, chunk_type)
 
         Mesh.read(self, io_stream, subchunk_end)
+
 
     def test_chunk_sizes(self):
         mesh = get_mesh_minimal()
