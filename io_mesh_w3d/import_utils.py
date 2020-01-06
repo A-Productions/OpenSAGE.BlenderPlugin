@@ -311,7 +311,6 @@ def create_bone_hierarchy(hierarchy, sub_objects, coll):
         basic_sphere = create_sphere()
 
         for bone in rig.pose.bones:
-            bone.bone.hide = True
             bone.custom_shape = basic_sphere
 
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -541,8 +540,12 @@ def get_bone(rig, hierarchy, channel):
         return rig
 
     pivot = hierarchy.pivots[channel.pivot]
-    if rig is not None and pivot.name in rig.pose.bones:
-        return rig.pose.bones[pivot.name]
+
+    if rig is not None:
+        if is_visibility(channel) and pivot.name in rig.data.bones:
+            return rig.data.bones[pivot.name]
+        elif pivot.name in rig.pose.bones:
+            return rig.pose.bones[pivot.name]
     return bpy.data.objects[pivot.name]
 
 
@@ -568,11 +571,16 @@ def set_rotation(bone, frame, value):
 
 
 def set_visibility(bone, frame, value):
-    if isinstance(bone, bpy.types.PoseBone):
-        bone.bone.hide = True
-        bone.bone.keyframe_insert(
+    if isinstance(bone, bpy.types.Bone):
+        #if bone.bone.name in bpy.context.object.bones:
+        #bone = bpy.context.object.bones[bone.bone.name]
+        bone.hide = True
+        bone.keyframe_insert(
             data_path='hide', frame=frame)
+        #else:
+        #    print("ERROR: bone not found")
     else:
+        print("### is object")
         bone.hide_viewport = value
         bone.keyframe_insert(data_path='hide_viewport',
                              frame=frame, options=creation_options)
