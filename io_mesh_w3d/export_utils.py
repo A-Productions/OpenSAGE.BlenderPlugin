@@ -539,14 +539,13 @@ def retrieve_hierarchy(context, container_name):
         meshes = get_objects('MESH')
 
     for mesh in meshes:
-        if mesh.vertex_groups \
-                or mesh.name in bounding_box_names \
+        if mesh.name in bounding_box_names \
                 or mesh.name in pick_plane_names:
             continue
 
-        #if (mesh.delta_location.length < 0.01 \
-        #        and mesh.delta_rotation_quaternion == Quaternion()):
-        #    continue
+        if mesh.vertex_groups and (mesh.delta_location.length < 0.01 \
+                and mesh.delta_rotation_quaternion == Quaternion()):
+            continue
 
         eulers = mesh.rotation_quaternion.to_euler()
         pivot = HierarchyPivot(
